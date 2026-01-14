@@ -3,95 +3,123 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const index = () => {
 
-  const [count, setCount] = useState(0);
+  // Déclaration de variables d'état
+  const [expression, setExpression] = useState(""); // L'expression tapée
+  const [result, setResult] = useState("0"); // Le résultat calculé
+
+  // Gestion des touches
+  const handlePress = (value) => {
+    if (value === '=') {
+      try {
+        // On remplace les symboles visuels par des opérateurs JS valides
+        const fixedExpression = expression
+          .replace(/x/g, '*')
+          .replace(/÷/g, '/')
+          .replace(/,/g, '.');
+        
+        // Calcul du résultat
+        const finalResult = eval(fixedExpression);
+        setResult(finalResult.toString());
+      } catch (error) {
+        setResult("Erreur");
+      }
+    } else if (value === 'C') {
+      // Réinitialisation
+      setExpression("");
+      setResult("0");
+    } else if (value === 'DEL') {
+      // Efface le dernier caractère
+      setExpression((prev) => prev.slice(0, -1));
+    } else if (value === '+/-') {
+      if (expression) {
+        setExpression((prev) => (prev.startsWith('-') ? prev.slice(1) : '-' + prev));
+      }
+    } else {
+      // Ajoute la valeur à l'expression
+      setExpression((prev) => prev + value);
+    }
+  }; // Fin de Gestion des touches
+
+  // Composant ECRAN de CALCULATRICE à 2 lignes (expression et résultat)
+  const Screen = ({expression, result}) => {
+    return (
+      <View style={styles.screenContainer}>
+        <Text style={styles.expressionText}>
+          {expression || " "} 
+        </Text>
+        <Text style={styles.resultText}>
+          {result}
+        </Text>
+      </View>
+    )
+  } // Fin du Composant ECRAN
 
   return (
     <View style={styles.content}>
+
+        {/* Marque Déposée de l'Appli ;) */}
       <View>
         <Text style={styles.title}>Moh Calculs +</Text>
       </View>
 
-      <View>
-        
-      </View>
+        {/* Zone de l'écran */}
+      <Screen 
+        expression={expression} 
+        result={result}/>
 
+        {/* Pavé Numérique */}
       <View style={styles.buttonsGroup}>
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>%</Text>
+                  <TouchableOpacity style={[styles.button, {backgroundColor: '#4d4d4d'}]} onPress={() => handlePress("DEL")}>
+                    <Text style={styles.buttonText}>DEL</Text>
+                  </TouchableOpacity>
+                  {["(", ")", "÷"].map((char) => (
+                    <TouchableOpacity key={char} style={styles.button} onPress={() => handlePress(char)}>
+                      <Text style={styles.buttonText}>{char}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>(</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>)</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count + 1)}>
-                        <Text style={styles.buttonText}>÷</Text>
-                    </TouchableOpacity>
+                  ))}
                 </View>
 
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>7</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>8</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>9</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count + 1)}>
-                        <Text style={styles.buttonText}>x</Text>
-                    </TouchableOpacity>
+                    {["7", "8", "9", "x"].map((char) => (
+                      <TouchableOpacity key={char} style={styles.button} onPress={() => handlePress(char)}>
+                        <Text style={styles.buttonText}>{char}</Text>
+                      </TouchableOpacity>
+                    ))}
                 </View>
 
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>4</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>5</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>6</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count + 1)}>
-                        <Text style={styles.buttonText}>-</Text>
-                    </TouchableOpacity>
+                    {["4", "5", "6", "-"].map((char) => (
+                      <TouchableOpacity key={char} style={styles.button} onPress={() => handlePress(char)}>
+                        <Text style={styles.buttonText}>{char}</Text>
+                      </TouchableOpacity>
+                    ))}
                 </View>
 
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>1</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>2</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
-                        <Text style={styles.buttonText}>3</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count + 1)}>
-                        <Text style={styles.buttonText}>+</Text>
-                    </TouchableOpacity>
+                    {["1", "2", "3", "+"].map((char) => (
+                      <TouchableOpacity key={char} style={styles.button} onPress={() => handlePress(char)}>
+                        <Text style={styles.buttonText}>{char}</Text>
+                      </TouchableOpacity>
+                    ))}
                 </View>
 
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
+                    <TouchableOpacity style={styles.button} onPress={() => handlePress("+/-")}>
                         <Text style={styles.buttonText}>+/-</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
+                    <TouchableOpacity style={styles.button} onPress={() => handlePress("0")}>
                         <Text style={styles.buttonText}>0</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count - 1)}>
+                    <TouchableOpacity style={styles.button} onPress={() => handlePress(".")}>
                         <Text style={styles.buttonText}>,</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => setCount(count + 1)}>
+                    <TouchableOpacity style={[styles.button, {backgroundColor: '#069813'}]} onPress={() => handlePress("=")}>
                         <Text style={styles.buttonText}>=</Text>
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.resetButton} onPress={() => setCount(0)}>
+                <TouchableOpacity style={styles.resetButton} onPress={() => handlePress("C")}>
                     <Text style={styles.buttonText}>REINITIALISER</Text>
                 </TouchableOpacity>
             </View>
@@ -106,20 +134,23 @@ const styles = StyleSheet.create({
   button : {
     backgroundColor: '#121412ff',
     padding: 15,
-    margin: 10,
+    margin: 5,
     borderRadius: 8,
     alignItems: 'center',
-    minWidth: 80,
+    justifyContent : 'center',
+    minWidth: 70,
+    minHeight: 70,
   },
 
   buttonsGroup: {
-  // Ce conteneur englobe tous les boutons
     alignItems: 'center',
+    marginTop : 20,
   },
 
   buttonText : {
     color: 'white',
-    fontSize: 18
+    fontSize: 24,
+    fontWeight : '500',
   },
 
   content : {
@@ -127,24 +158,47 @@ const styles = StyleSheet.create({
     backgroundColor : 'orange',
     alignItems : 'center',
   },
-  title : {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: 'white',
+  expressionText : {
+    color : '#b3b3b3',
+    fontSize : 28,
+    marginBottom : 5,
+    alignSelf : 'flex-start',
   },
   resetButton: {
     backgroundColor: '#780c09ff',
-    marginTop: 10, 
+    marginTop: 15, 
     padding: 15, 
     borderRadius: 8,
     alignItems: 'center',
     alignSelf: 'stretch', 
     marginHorizontal: 10,
   },
-
+  resultText : {
+    color : 'white',
+    fontSize : 38,
+    fontWeight : 'bold',
+    alignSelf : 'flex-end',
+  },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
+  },
+  screenContainer : {
+    width : '75%',
+    height : 140,
+    backgroundColor : '#252525',
+    justifyContent : 'center',
+    alignItems : 'flex-end',
+    padding : 20,
+    borderRadius : 15,
+    marginTop : 10,
+    elevation : 5,
+  },
+  title : {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: 'white',
+    marginTop : 30,
   },
 })
